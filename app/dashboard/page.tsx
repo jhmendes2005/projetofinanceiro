@@ -86,16 +86,20 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back! Here's your financial overview.
-        </p>
+    // Alteração 1: Padding responsivo (p-4 no mobile, p-8 no desktop)
+    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
+      <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between md:space-y-0">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Dashboard</h1>
+          <p className="text-sm text-muted-foreground md:text-base">
+            Welcome back! Here's your financial overview.
+          </p>
+        </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Alteração 2: Grid responsivo. 1 col (mobile), 2 cols (tablet/sm), 4 cols (desktop/lg) */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
@@ -149,7 +153,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Projected Recurring Income</CardTitle>
@@ -178,17 +182,18 @@ export default async function DashboardPage() {
       </div>
 
       {/* Charts and Details */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      {/* Alteração 3: Mantivemos grid-cols-1 para mobile/tablet e ativamos grid-cols-7 apenas em LG (desktop) */}
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
+        <Card className="col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle>Spending Overview</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pl-2">
             <OverviewChart userId={user.id} />
           </CardContent>
         </Card>
 
-        <Card className="col-span-3">
+        <Card className="col-span-1 lg:col-span-3">
           <CardHeader>
             <CardTitle>Budget Progress</CardTitle>
           </CardHeader>
@@ -199,8 +204,9 @@ export default async function DashboardPage() {
       </div>
 
       {/* Recent Transactions & Upcoming Recurring */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+      {/* Alteração 4: Breakpoint LG para dividir a tela, abaixo disso empilha */}
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+        <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>
           </CardHeader>
@@ -209,7 +215,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Upcoming Recurring</CardTitle>
           </CardHeader>
