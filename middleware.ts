@@ -1,6 +1,10 @@
 import { type NextRequest } from 'next/server'
-// Agora o import vai funcionar porque o nome bate
-import { updateSession } from '@/lib/supabase/session' 
+
+// Mude disto:
+// import { updateSession } from '@/lib/supabase/session'
+
+// PARA ISTO (Caminho relativo):
+import { updateSession } from './lib/supabase/session'
 
 export async function middleware(request: NextRequest) {
   return await updateSession(request)
