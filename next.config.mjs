@@ -11,6 +11,7 @@ const nextConfig = {
     'winston', 
     'bufferutil', 
     'utf-8-validate', 
+    'ws', // <--- ADICIONE ISTO AQUI
   ],
 }
 
