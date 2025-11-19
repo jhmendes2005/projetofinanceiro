@@ -14,24 +14,31 @@ export default async function TransactionsPage() {
   if (!user) return null
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    // Alteração 1: Padding responsivo (p-4 mobile, p-8 desktop)
+    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
+      {/* Alteração 2: Flex-col no mobile, Flex-row no desktop */}
+      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
-          <p className="text-muted-foreground">
+          {/* Alteração 3: Tamanho da fonte ajustado */}
+          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Transactions</h1>
+          <p className="text-sm text-muted-foreground md:text-base">
             Track all your income and expenses
           </p>
         </div>
+        
         <AddTransactionDialog>
-          <Button>
+          {/* Alteração 4: Botão full width no mobile */}
+          <Button className="w-full md:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add Transaction
           </Button>
         </AddTransactionDialog>
       </div>
 
-      <TransactionsFilters />
-      <TransactionsList userId={user.id} />
+      <div className="space-y-4">
+        <TransactionsFilters />
+        <TransactionsList userId={user.id} />
+      </div>
     </div>
   )
 }
