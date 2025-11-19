@@ -6,17 +6,16 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Adicione isto para corrigir o erro de __dirname em dependências
-  serverExternalPackages: ['pino', 'winston', 'bufferutil', 'utf-8-validate'],
-  
-  // Às vezes necessário se o erro persistir:
-  webpack: (config) => {
-    config.externals.push({
-      'utf-8-validate': 'commonjs utf-8-validate',
-      'bufferutil': 'commonjs bufferutil',
-    })
-    return config
-  },
+  // Esta é a forma correta de corrigir erros de dependência no Next.js moderno.
+  // Isso impede que o Next tente empacotar bibliotecas que usam recursos nativos do Node.
+  serverExternalPackages: [
+    'pino', 
+    'winston', 
+    'bufferutil', 
+    'utf-8-validate', 
+    'canvas',
+    'sharp'
+  ],
 }
 
 export default nextConfig
