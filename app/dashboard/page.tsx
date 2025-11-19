@@ -14,7 +14,7 @@ export default async function DashboardPage() {
 
   if (!user) return null
 
-  // Fetch financial summary data
+  // --- Fetch Financial Data ---
   const { data: accounts } = await supabase
     .from('accounts')
     .select('balance')
@@ -40,7 +40,7 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .eq('is_active', true)
 
-  // Calculate totals
+  // --- Calculations ---
   const totalBalance = accounts?.reduce((sum, acc) => sum + Number(acc.balance), 0) || 0
   const totalCreditUsed = creditCards?.reduce((sum, card) => sum + Number(card.current_balance), 0) || 0
   const totalCreditLimit = creditCards?.reduce((sum, card) => sum + Number(card.credit_limit), 0) || 0
@@ -86,8 +86,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    // Alteração 1: Padding responsivo (p-4 no mobile, p-8 no desktop)
-    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
+    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8 overflow-hidden">
       <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div>
           <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Dashboard</h1>
@@ -97,8 +96,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Summary Cards */}
-      {/* Alteração 2: Grid responsivo. 1 col (mobile), 2 cols (tablet/sm), 4 cols (desktop/lg) */}
+      {/* --- Summary Cards --- */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -121,7 +119,9 @@ export default async function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(totalCreditUsed)}</div>
             <p className="text-xs text-muted-foreground">
-              {totalCreditLimit > 0 ? `${((totalCreditUsed / totalCreditLimit) * 100).toFixed(1)}% of ${formatCurrency(totalCreditLimit)}` : 'No credit cards'}
+              {totalCreditLimit > 0 
+                ? `${((totalCreditUsed / totalCreditLimit) * 100).toFixed(1)}% of ${formatCurrency(totalCreditLimit)}` 
+                : 'No credit cards'}
             </p>
           </CardContent>
         </Card>
@@ -153,6 +153,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
+      {/* --- Projections --- */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -181,15 +182,20 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Charts and Details */}
-      {/* Alteração 3: Mantivemos grid-cols-1 para mobile/tablet e ativamos grid-cols-7 apenas em LG (desktop) */}
+      {/* --- Main Charts Area --- */}
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
-        <Card className="col-span-1 lg:col-span-4">
+        {/* CORREÇÃO PRINCIPAL: 
+            Adicionei um container interno com altura fixa (h-[350px]).
+            Isso impede que o Recharts/Chart.js quebre o layout ou colapse.
+        */}
+        <Card className="col-span-1 lg:col-span-4 overflow-hidden"> {/* Adicionado overflow-hidden */}
           <CardHeader>
             <CardTitle>Spending Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
-            <OverviewChart userId={user.id} />
+            <div className="h-[300px] sm:h-[350px] w-full">
+              <OverviewChart userId={user.id} />
+            </div>
           </CardContent>
         </Card>
 
@@ -203,10 +209,9 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      {/* Recent Transactions & Upcoming Recurring */}
-      {/* Alteração 4: Breakpoint LG para dividir a tela, abaixo disso empilha */}
+      {/* --- Bottom Section --- */}
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-        <Card className="col-span-1">
+        <Card className="col-span-1 h-full">
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>
           </CardHeader>
@@ -215,7 +220,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1">
+        <Card className="col-span-1 h-full">
           <CardHeader>
             <CardTitle>Upcoming Recurring</CardTitle>
           </CardHeader>
