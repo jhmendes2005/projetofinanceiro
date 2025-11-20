@@ -12,16 +12,24 @@ import { Search } from 'lucide-react'
 
 export function TransactionsFilters() {
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
+    // Alteração 1: md:flex-row (quebra em 768px em vez de 640px para dar mais espaço)
+    <div className="flex flex-col md:flex-row gap-4">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search transactions..."
-          className="pl-9"
+          className="pl-9 w-full"
         />
       </div>
+      
+      {/* Dica de Layout Mobile:
+         Se quiser que os filtros fiquem lado a lado no celular (em vez de empilhados),
+         você pode envolver estes dois Selects em uma div com className="flex gap-4"
+      */}
+      
       <Select defaultValue="all">
-        <SelectTrigger className="w-full sm:w-[180px]">
+        {/* Alteração 2: w-full no mobile, w-[180px] no desktop */}
+        <SelectTrigger className="w-full md:w-[180px]">
           <SelectValue placeholder="Type" />
         </SelectTrigger>
         <SelectContent>
@@ -30,8 +38,9 @@ export function TransactionsFilters() {
           <SelectItem value="expense">Expense</SelectItem>
         </SelectContent>
       </Select>
+
       <Select defaultValue="all-time">
-        <SelectTrigger className="w-full sm:w-[180px]">
+        <SelectTrigger className="w-full md:w-[180px]">
           <SelectValue placeholder="Period" />
         </SelectTrigger>
         <SelectContent>

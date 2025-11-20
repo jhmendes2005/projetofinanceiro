@@ -22,7 +22,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  // Removemos o SheetTrigger para evitar conflitos
+  SheetDescription, // Adicionado para acessibilidade
 } from '@/components/ui/sheet'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
@@ -33,14 +33,60 @@ import {
   CreditCard, 
   Wallet, 
   Settings, 
-  LogOut 
+  LogOut, 
+  TrendingUp, 
+  PieChart, 
+  Receipt, 
+  Tags, 
+  Repeat 
 } from 'lucide-react'
 
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/transactions', label: 'Transactions', icon: CreditCard },
-  { href: '/dashboard/accounts', label: 'Accounts', icon: Wallet },
-  { href: '/dashboard/settings', label: 'Settings', icon: Settings },
+export const navItems = [
+  {
+    title: 'Overview',
+    href: '/dashboard',
+    icon: LayoutDashboard,
+  },
+  {
+    title: 'Transactions',
+    href: '/dashboard/transactions',
+    icon: Receipt,
+  },
+  {
+    title: 'Accounts',
+    href: '/dashboard/accounts',
+    icon: Wallet,
+  },
+  {
+    title: 'Credit Cards',
+    href: '/dashboard/credit-cards',
+    icon: CreditCard,
+  },
+  {
+    title: 'Recurring',
+    href: '/dashboard/recurring',
+    icon: Repeat,
+  },
+  {
+    title: 'Loans',
+    href: '/dashboard/loans',
+    icon: TrendingUp,
+  },
+  {
+    title: 'Categories',
+    href: '/dashboard/categories',
+    icon: Tags,
+  },
+  {
+    title: 'Reports',
+    href: '/dashboard/reports',
+    icon: PieChart,
+  },
+  {
+    title: 'Settings',
+    href: '/dashboard/settings',
+    icon: Settings,
+  },
 ]
 
 export function DashboardHeader({ user }: { user: User }) {
@@ -48,7 +94,6 @@ export function DashboardHeader({ user }: { user: User }) {
   const pathname = usePathname()
   const supabase = getSupabaseBrowserClient()
   
-  // Estado para controlar o menu mobile
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
@@ -57,22 +102,20 @@ export function DashboardHeader({ user }: { user: User }) {
     router.refresh()
   }
 
-  const initials = user.email
-    ?.split('@')[0]
-    .substring(0, 2)
-    .toUpperCase() || 'U'
+  // CORREÇÃO: Tratamento seguro para evitar erro se email for undefined
+  const getInitials = () => {
+    const emailName = user.email?.split('@')[0] || 'User'
+    return emailName.substring(0, 2).toUpperCase()
+  }
+
+  const initials = getInitials()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-16 items-center justify-between px-4 lg:px-8">
         <div className="flex items-center gap-4">
           
-          {/* SOLUÇÃO DO PROBLEMA DO HAMBURGUER:
-             1. Removemos o <SheetTrigger> que envolve o botão.
-             2. Colocamos o onClick={() => setIsMobileMenuOpen(true)} direto no botão.
-             3. O Sheet obedece apenas à prop 'open'.
-          */}
-          
+          {/* Botão do Menu Mobile (Controlado manualmente) */}
           <Button
             variant="ghost"
             size="icon"
@@ -84,7 +127,6 @@ export function DashboardHeader({ user }: { user: User }) {
           </Button>
 
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            {/* O z-index aqui garante que o menu fique acima do header sticky */}
             <SheetContent side="left" className="w-[250px] sm:w-[300px] z-[100]">
               <SheetHeader>
                 <SheetTitle className="flex items-center gap-2 mb-4">
@@ -93,12 +135,17 @@ export function DashboardHeader({ user }: { user: User }) {
                   </div>
                   Finance Dashboard
                 </SheetTitle>
+                <SheetDescription className="sr-only">
+                    Mobile navigation menu
+                </SheetDescription>
               </SheetHeader>
               
               <nav className="flex flex-col gap-2 mt-4">
                 {navItems.map((item) => {
                   const Icon = item.icon
+                  // Melhora a lógica de "ativo" para incluir sub-rotas se necessário, ou mantém exato
                   const isActive = pathname === item.href
+                  
                   return (
                     <Link
                       key={item.href}
@@ -111,7 +158,7 @@ export function DashboardHeader({ user }: { user: User }) {
                       }`}
                     >
                       <Icon className="h-4 w-4" />
-                      {item.label}
+                      {item.title} {/* Corrigido de item.label para item.title conforme o array navItems */}
                     </Link>
                   )
                 })}
@@ -129,7 +176,7 @@ export function DashboardHeader({ user }: { user: User }) {
             </SheetContent>
           </Sheet>
 
-          {/* Logo / Title */}
+          {/* Logo / Title Desktop */}
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">

@@ -92,107 +92,144 @@ export function TransactionsList({ userId }: { userId: string }) {
 
   return (
     <>
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Type</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Account</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead className="w-[50px]"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell>
-                  <div
-                    className={`rounded-full p-2 w-fit ${
-                      transaction.type === 'income'
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-red-100 text-red-600'
-                    }`}
-                  >
-                    {transaction.type === 'income' ? (
-                      <ArrowUpRight className="h-4 w-4" />
-                    ) : (
-                      <ArrowDownRight className="h-4 w-4" />
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div>
-                    <p className="font-medium">{transaction.description}</p>
-                    {transaction.payee && (
-                      <p className="text-sm text-muted-foreground">{transaction.payee}</p>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">
-                    {transaction.category?.name || 'Uncategorized'}
-                  </Badge>
-                </TableCell>
-                <TableCell>{transaction.account.name}</TableCell>
-                <TableCell>
-                  {new Date(transaction.date).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      transaction.status === 'completed'
-                        ? 'default'
-                        : transaction.status === 'pending'
-                        ? 'secondary'
-                        : 'destructive'
-                    }
-                  >
-                    {transaction.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <span
-                    className={`font-semibold ${
-                      transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-                    }`}
-                  >
-                    {transaction.type === 'income' ? '+' : '-'}
-                    {formatCurrency(transaction.amount)}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setEditTransaction(transaction)}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        className="text-red-600"
-                        onClick={() => {
-                          setDeleteTransactionId(transaction.id)
-                          setDeleteTransactionDesc(transaction.description)
-                        }}
-                      >
-                        <Trash className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+      <Card className="overflow-hidden"> {/* overflow-hidden no Card */}
+        {/* Wrapper para scroll horizontal em telas muito pequenas se necessário */}
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50px]">Type</TableHead>
+                <TableHead>Description</TableHead>
+                {/* Oculta em telas menores que MD (tablets verticais) */}
+                <TableHead className="hidden md:table-cell">Category</TableHead>
+                {/* Oculta em telas menores que LG (laptops) */}
+                <TableHead className="hidden lg:table-cell">Account</TableHead>
+                {/* Oculta Data em MD, pois vamos mostrá-la junto da descrição no mobile */}
+                <TableHead className="hidden md:table-cell">Date</TableHead>
+                {/* Oculta Status em SM (mobile) */}
+                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {transactions.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell>
+                    <div
+                      className={`rounded-full p-2 w-fit ${
+                        transaction.type === 'income'
+                          ? 'bg-green-100 text-green-600'
+                          : 'bg-red-100 text-red-600'
+                      }`}
+                    >
+                      {transaction.type === 'income' ? (
+                        <ArrowUpRight className="h-4 w-4" />
+                      ) : (
+                        <ArrowDownRight className="h-4 w-4" />
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-medium truncate max-w-[150px] sm:max-w-none">
+                        {transaction.description}
+                      </span>
+                      
+                      {/* Mobile Only: Mostra a data e Payee aqui embaixo em telas pequenas */}
+                      <div className="flex flex-col gap-0.5 md:hidden">
+                        <span className="text-xs text-muted-foreground">
+                           {new Date(transaction.date).toLocaleDateString()}
+                        </span>
+                        {transaction.payee && (
+                            <span className="text-xs text-muted-foreground truncate max-w-[140px]">
+                                {transaction.payee}
+                            </span>
+                        )}
+                      </div>
+
+                      {/* Desktop Only: Payee aparece normal */}
+                      {transaction.payee && (
+                        <span className="text-sm text-muted-foreground hidden md:block">
+                          {transaction.payee}
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
+                  
+                  {/* Category: some no mobile */}
+                  <TableCell className="hidden md:table-cell">
+                    <Badge variant="outline">
+                      {transaction.category?.name || 'Uncategorized'}
+                    </Badge>
+                  </TableCell>
+
+                  {/* Account: some no mobile/tablet */}
+                  <TableCell className="hidden lg:table-cell">
+                    {transaction.account.name}
+                  </TableCell>
+
+                  {/* Date: Coluna some no mobile (aparece na descrição) */}
+                  <TableCell className="hidden md:table-cell">
+                    {new Date(transaction.date).toLocaleDateString()}
+                  </TableCell>
+
+                  {/* Status: some no mobile */}
+                  <TableCell className="hidden sm:table-cell">
+                    <Badge
+                      variant={
+                        transaction.status === 'completed'
+                          ? 'default'
+                          : transaction.status === 'pending'
+                          ? 'secondary'
+                          : 'destructive'
+                      }
+                    >
+                      {transaction.status}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="text-right">
+                    <span
+                      className={`font-semibold whitespace-nowrap ${
+                        transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+                      }`}
+                    >
+                      {transaction.type === 'income' ? '+' : '-'}
+                      {formatCurrency(transaction.amount)}
+                    </span>
+                  </TableCell>
+                  
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => setEditTransaction(transaction)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          className="text-red-600"
+                          onClick={() => {
+                            setDeleteTransactionId(transaction.id)
+                            setDeleteTransactionDesc(transaction.description)
+                          }}
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </Card>
 
       {editTransaction && (
